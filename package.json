@@ -5,10 +5,9 @@
   "type": "module",
   "homepage": "./",
   "scripts": {
-    "start": "vk-tunnel",
-    "build": "vk-miniapps-builder",
+    "predeploy": "npm run build",
     "deploy": "vk-miniapps-deploy",
-    "predeploy": "npm run build"
+    "clean-source": "rimraf README.md src webroot package.json"
   },
   "dependencies": {
     "@vkontakte/icons": "^3.1.1",
@@ -33,7 +32,6 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
     "terser": "^5.4.0",
-    "vite": "^5.0.8",
-    "vk-miniapps-deploy": "^9999.0.0"
+    "vite": "^5.0.8"
   }
 }
