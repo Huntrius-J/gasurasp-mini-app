@@ -5,6 +5,7 @@
   "type": "module",
   "homepage": "./",
   "scripts": {
+    "build": "...",
     "predeploy": "npm run build",
     "deploy": "vk-miniapps-deploy",
     "clean-source": "rimraf README.md src webroot package.json"
