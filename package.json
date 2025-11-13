@@ -3,15 +3,12 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://Huntrius-J.github.io/",
+  "homepage": "./",
   "scripts": {
-    "start": "vite",
-    "build": "vite build",
-    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview",
-    "tunnel": "vk-tunnel --insecure=1 --http-protocol=http --ws-protocol=ws --host=0.0.0.0 --port=5173",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "start": "vk-tunnel",
+    "build": "vk-miniapps-builder",
+    "deploy": "vk-miniapps-deploy",
+    "predeploy": "npm run build"
   },
   "dependencies": {
     "@vkontakte/icons": "^3.1.1",
