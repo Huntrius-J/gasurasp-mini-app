@@ -81,13 +81,6 @@ export const Home = ({ id, fetchedUser ,raspData}) => {
   return (
     <Panel id={id}>
       <PanelHeader before={<PanelHeaderBack onClick={() => routeNavigator.back()} />}>{getPanelHeader()}</PanelHeader>
-      {fetchedUser && (
-        <Group > header={<Header size="s">User Data Fetched with VK Bridge</Header>}
-          <Cell before={photo_200 && <Avatar src={photo_200} />} subtitle={city?.title}>
-            {`${first_name} ${last_name}`}
-          </Cell>
-        </Group>
-      )}
       <Group>
         <DateInput alue={date} onChange={handleDateChange}  disabled={isLoading} defaultValue={new Date()} accessible/>
       </Group>
