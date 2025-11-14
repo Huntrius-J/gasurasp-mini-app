@@ -118,7 +118,7 @@ export const Home = ({ id, fetchedUser ,raspData}) => {
                 afterAlign="center"
                 before={<Icon20CalendarCheckOutline />}
               >
-                <Text weight="2" style={{color: "#fffff"}}>{new Date(dateKey).toLocaleDateString('ru-RU', {
+                <Text weight="2" style={{color: "white"}}>{new Date(dateKey).toLocaleDateString('ru-RU', {
                   weekday: 'long',
                   day: 'numeric',
                   month: 'long',
@@ -151,7 +151,7 @@ export const Home = ({ id, fetchedUser ,raspData}) => {
                         }} 
                         minBlockSize={70}
                       >
-                        <Text weight="2" style={{ fontSize: 16, lineHeight: 1.2, color: "#fffff"}}>
+                        <Text weight="2" style={{ fontSize: 16, lineHeight: 1.2, color: "white"}}>
                           {item.начало}
                         </Text>
                         <Text 
@@ -160,7 +160,7 @@ export const Home = ({ id, fetchedUser ,raspData}) => {
                             opacity: 0.8,
                             lineHeight: 1.2,
                             marginTop: 2,
-                            color: "#fffff"
+                            color: "white"
                           }}
                         >
                           {item.конец}
