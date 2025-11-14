@@ -1,4 +1,4 @@
-import { Panel, PanelHeader, Header, DateInput, Button,ButtonGroup,Card, RichCell, Group, Cell, Avatar, Box, Text,ContentCard,SimpleCell,InfoRow, PanelHeaderBack, Separator } from '@vkontakte/vkui';
+import { Panel, PanelHeader, Header, DateInput, Button,ButtonGroup,Card, RichCell, Group, Cell, Avatar, Box, Text,ContentCard,SimpleCell,InfoRow, PanelHeaderBack, Separator, Spinner } from '@vkontakte/vkui';
 import { useParams, useRouteNavigator, useSearchParams } from '@vkontakte/vk-mini-apps-router';
 import PropTypes from 'prop-types';
 import { useState, useEffect , useLayoutEffect} from 'react';
@@ -92,6 +92,7 @@ export const Home = ({ id, fetchedUser ,raspData}) => {
 
   const handleDateChange = (newDate) => {
     setDate(newDate);
+    setData([]);
     fetchData(newDate);
   };
 
@@ -99,24 +100,25 @@ export const Home = ({ id, fetchedUser ,raspData}) => {
   
   return (
     <Panel id={id}>
-      <PanelHeader before={<PanelHeaderBack onClick={() => routeNavigator.back()} />}>{getPanelHeader()}</PanelHeader>
+      <PanelHeader before={<PanelHeaderBack onClick={() => routeNavigator.back()} />}>{<Text weight="2" style={{fontSize:16}}>{getPanelHeader()}</Text>}</PanelHeader>
       <Group style={{padding: 12}}>
-        <DateInput  value={date} onChange={handleDateChange}  disabled={isLoading} defaultValue={new Date()} accessible/>
+        <DateInput style={{textAlign:"center"}} value={date} onChange={handleDateChange} after=""  disabled={isLoading} defaultValue={new Date()} accessible/>
       </Group>
-      
+      {isLoading ? (<Spinner style={{alignContent: "center", flex: 1}} size="xl" />) :""}
+
       <Group mode="card">
         {groupedData.length > 0 ? (
           groupedData.map(([dateKey, items], groupIndex) => (
             <div key={dateKey}>
 
               <RichCell
-                style={{backgroundColor:"#004d9f", marginInline: 12, borderRadius:8, minHeight:0}}
+                style={{backgroundColor:"#004d9f", marginInline: 12, borderRadius:8, minHeight:0 }}
                 beforeAlign="center"
                 contentAlign="center"
                 afterAlign="center"
                 before={<Icon20CalendarCheckOutline />}
               >
-                <Text weight="2">{new Date(dateKey).toLocaleDateString('ru-RU', {
+                <Text weight="2" style={{color: "#fffff"}}>{new Date(dateKey).toLocaleDateString('ru-RU', {
                   weekday: 'long',
                   day: 'numeric',
                   month: 'long',
@@ -136,7 +138,7 @@ export const Home = ({ id, fetchedUser ,raspData}) => {
                       Component="div" 
                       style={{ 
                         backgroundColor: item.цвет,
-                        minWidth: 70,
+                        minWidth: 50,
                         borderRadius: 8
                       }}
                     >
@@ -149,7 +151,7 @@ export const Home = ({ id, fetchedUser ,raspData}) => {
                         }} 
                         minBlockSize={70}
                       >
-                        <Text weight="2" style={{ fontSize: 16, lineHeight: 1.2 }}>
+                        <Text weight="2" style={{ fontSize: 16, lineHeight: 1.2, color: "#fffff"}}>
                           {item.начало}
                         </Text>
                         <Text 
@@ -157,7 +159,8 @@ export const Home = ({ id, fetchedUser ,raspData}) => {
                             fontSize: 12, 
                             opacity: 0.8,
                             lineHeight: 1.2,
-                            marginTop: 2
+                            marginTop: 2,
+                            color: "#fffff"
                           }}
                         >
                           {item.конец}
@@ -244,7 +247,7 @@ export const Home = ({ id, fetchedUser ,raspData}) => {
               ))}
             </div>
           ))
-        ) : (
+        ) : isLoading ? "" : (
           <Text style={{ textAlign: "center", padding: 20 }}>Нет расписания</Text>
         )}
       </Group>
