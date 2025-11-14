@@ -1,4 +1,4 @@
-import { Panel, PanelHeader, Header,Input,Select, Button, Group, Cell, Avatar, Box, Text, CellButton, PanelHeaderBack } from '@vkontakte/vkui';
+import { Panel, PanelHeader, Header,Input,Select, Button, Group, Cell, Avatar, Box, Text, CellButton, PanelHeaderBack, CustomSelect, Search } from '@vkontakte/vkui';
 import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router';
 import PropTypes from 'prop-types';
 import { useEffect, useLayoutEffect, useState } from 'react';
@@ -79,8 +79,9 @@ export const Rasp = ({id}) => {
             <PanelHeader >
               Расписание
             </PanelHeader>
-            <Group>
-            <Select
+            <Group style={{paddingInline: 15}}>
+            <CustomSelect
+              style={{textAlign:"center"}}
               defaultValue="raspGroupList"
               onChange={(event) => changeSearch(event.target.value)}
               options={[
@@ -89,13 +90,11 @@ export const Rasp = ({id}) => {
                 { value: 'raspAudList', label: 'По аудиториям' },
               ]}
             />
-            </Group>
-          <Group separator="hide">
-            <Input name="input" value={filter} onChange={(event) => filterData(event.target.value)} placeholder="Введите группу" />
+            <Search style={{paddingInline:0,paddingBottom:0}} after="" name="input" value={filter} onChange={(event) => filterData(event.target.value)} placeholder="Введите для поиска" />
           </Group>
           <Group>
           {filteredData!=null ? filteredData.map((item,index) => (
-          <CellButton key={index} onClick={() => handleItemClick(item)} appearance="neutral">
+          <CellButton key={index} centered onClick={() => handleItemClick(item)} appearance="neutral">
             <Text >{item.name}</Text>
           </CellButton>
           )):""}
