@@ -116,7 +116,7 @@ export const Home = ({ id, fetchedUser ,raspData}) => {
                 beforeAlign="center"
                 contentAlign="center"
                 afterAlign="center"
-                before={<Icon20CalendarCheckOutline />}
+                before={<Icon20CalendarCheckOutline style={{fill: "white"}}/>}
               >
                 <Text weight="2" style={{color: "white"}}>{new Date(dateKey).toLocaleDateString('ru-RU', {
                   weekday: 'long',
