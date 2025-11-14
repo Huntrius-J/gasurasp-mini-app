@@ -1,123 +1,250 @@
-import { Panel, PanelHeader, Header,Input,Select, Button, Group, Cell, Avatar, Box, Text, CellButton, PanelHeaderBack, CustomSelect, Search, Spinner } from '@vkontakte/vkui';
-import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router';
+import { Panel, PanelHeader, DateInput, Card, RichCell, Group, Box, Text, PanelHeaderBack, Spinner } from '@vkontakte/vkui';
+import { useRouteNavigator, useSearchParams } from '@vkontakte/vk-mini-apps-router';
 import PropTypes from 'prop-types';
-import { useEffect, useLayoutEffect, useState } from 'react';
-import { Icon12Users, Icon16BuildingOutline, Icon16User, Icon16Users, Icon56EventOutline } from '@vkontakte/icons';
+import { useState, useLayoutEffect} from 'react';
+import { Icon12User, Icon20CalendarCheckOutline } from '@vkontakte/icons';
 
 export const Rasp = ({id}) => {
   const routeNavigator = useRouteNavigator();
-  const [data,setData] = useState();
+  const [data, setData] = useState([]); 
+  const [date, setDate] = useState(new Date());
   const [isLoading, setIsLoading] = useState(false);
-  const [filter,setFilter] = useState("");
-  const [filteredData,setFilteredData] = useState();
-  const [searchBy,setSearchBy] = useState("raspGroupList");
-  const [selectIcon,setSelectIcon] = useState(<Icon16Users></Icon16Users>);
 
-  const fetchData = async (searchBy) => {
-      setIsLoading(true);
-      try {
-        const year = new Date().getFullYear();
-        const url = `https://stud.gasu.ru/api/${searchBy}?year=${year}-${year+1}`;
-        console.log('Fetching data from:', url);
-        
-        const response = await fetch(url);
-        const result = await response.json();
-        setData(result.data);
-        setFilteredData(result.data);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
-    const filterData = (value) =>
-    {
-      setFilter(value);
-      if(data != null)
-      {
-        setFilteredData(data.filter(x => x.name.toLowerCase().includes(value.toLowerCase())));
-      }
-    }
-
-    const changeSearch = (value) =>
-    {
-      if(searchBy != value)
-      {
-        setSearchBy(value);
-        setFilter("");
-        setFilteredData([]);
-        fetchData(value);
-        
-        if (value === 'raspGroupList') {
-          setSelectIcon(<Icon16Users></Icon16Users>);
-        } else if (value === 'raspTeacherList') {
-          setSelectIcon(<Icon16User></Icon16User>);
-        } else if (value === 'raspAudList') {
-          setSelectIcon(<Icon16BuildingOutline></Icon16BuildingOutline>);
-        }
-      }
-    }
-
-    useLayoutEffect(() => {
-      fetchData(searchBy);
-    }, []);
-
-  const handleItemClick = (item) => {
-    const searchParams = new URLSearchParams();
+   const [searchParams] = useSearchParams();
+  const type = searchParams.get('type');
+  const idParam = searchParams.get('id');
+  const name = searchParams.get('name');
   
-    if (searchBy === 'raspGroupList') {
-      searchParams.set('type', 'group');
-      searchParams.set('id', item.id.toString());
-      searchParams.set('name', item.name);
-    } else if (searchBy === 'raspTeacherList') {
-      searchParams.set('type', 'teacher');
-      searchParams.set('id', item.id.toString());
-      searchParams.set('name', item.name);
-    } else if (searchBy === 'raspAudList') {
-      searchParams.set('type', 'auditorium');
-      searchParams.set('id', item.id.toString());
-      searchParams.set('name', item.name);
+  const selectedItem = type && idParam ? {
+    type: type,
+    id: idParam,
+    name: name || 'Неизвестно'
+  } : null;
+
+  const fetchData = async (selectedDate) => {
+    setIsLoading(true);
+    try {
+      const formattedDate = selectedDate.toISOString().split('T')[0];
+      let url = '';
+      
+      if (selectedItem.type === 'group') {
+        url = `https://stud.gasu.ru/api/Rasp?idGroup=${selectedItem.id}&sdate=${formattedDate}`;
+      } else if (selectedItem.type === 'teacher') {
+        url = `https://stud.gasu.ru/api/Rasp?idTeacher=${selectedItem.id}&sdate=${formattedDate}`;
+      } else if (selectedItem.type === 'auditorium') {
+        url = `https://stud.gasu.ru/api/Rasp?idAudLine=${selectedItem.id}&sdate=${formattedDate}`;
+      }
+      
+      const response = await fetch(url);
+      const result = await response.json();
+      setData(result.data);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
+      setIsLoading(false);
     }
+  };
 
-    routeNavigator.push(`/home?${searchParams.toString()}`);
-  }
+  const getPanelHeader = () => {
+    if (!selectedItem) return "Расписание";
+    
+    switch (selectedItem.type) {
+      case 'group':
+        return `${selectedItem.name}`;
+      case 'teacher':
+        return `${selectedItem.name}`;
+      case 'auditorium':
+        return `${selectedItem.name}`;
+      default:
+        return "Расписание";
+    }
+  };
 
+  const groupCardsByDate = () => {
+    if (!data || !data.rasp) return [];
+    
+    const grouped = {};
+    
+    data.rasp.forEach((item) => {
+      const dateKey = item.дата;
+      if (!grouped[dateKey]) {
+        grouped[dateKey] = [];
+      }
+      grouped[dateKey].push(item);
+    });
+    
+    return Object.entries(grouped);
+  };
 
-    return(      
+  useLayoutEffect(() => {
+    fetchData(date);
+  }, []);
 
-          <Panel id={id}>
-            <PanelHeader >
-              Расписание ГАГУ
-            </PanelHeader>
-            <Group style={{paddingInline: 15}}>
-            <CustomSelect
-              style={{textAlign:"center"}}
-              before={selectIcon}
-              defaultValue="raspGroupList"
-              onChange={(event) => changeSearch(event.target.value)}
-              options={[
-                { before:<Icon16Users></Icon16Users>, value: 'raspGroupList', label: 'По группам' },
-                { before: <Icon16User></Icon16User>, value: 'raspTeacherList', label: 'По преподавателям' },
-                { before: <Icon16BuildingOutline></Icon16BuildingOutline>, value: 'raspAudList', label: 'По аудиториям' },
-              ]}
-            />
-            <Search style={{paddingInline:0,paddingBottom:0}} after="" name="input" value={filter} onChange={(event) => filterData(event.target.value)} placeholder="Введите для поиска" />
-          </Group>
-          {isLoading ? (<Spinner style={{alignContent: "center", flex: 1}} size="xl" />) :""}
-          <Group>
-          {filteredData!=null ? filteredData.map((item,index) => (
-          <CellButton key={index} centered onClick={() => handleItemClick(item)} appearance="neutral">
-            <Text >{item.name}</Text>
-          </CellButton>
-          )):""}
-          </Group>
-          </Panel>
+  const handleDateChange = (newDate) => {
+    setDate(newDate);
+    setData([]);
+    fetchData(newDate);
+  };
 
-      )
-}
+  const groupedData = groupCardsByDate();
+  
+  return (
+    <Panel id={id}>
+      <PanelHeader before={<PanelHeaderBack onClick={() => routeNavigator.back()} />}>{<Text weight="2" style={{fontSize:16}}>{getPanelHeader()}</Text>}</PanelHeader>
+      <Group style={{padding: 12}}>
+        <DateInput style={{textAlign:"center"}} value={date} onChange={handleDateChange} after=""  disabled={isLoading} defaultValue={new Date()} accessible/>
+      </Group>
+      {isLoading ? (<Spinner style={{alignContent: "center", flex: 1}} size="xl" />) :""}
 
-Rasp.propTypes = {
-  id: PropTypes.string.isRequired
+      <Group mode="card">
+        {groupedData.length > 0 ? (
+          groupedData.map(([dateKey, items], groupIndex) => (
+            <div key={dateKey}>
+
+              <RichCell
+                style={{backgroundColor:"#004d9f", marginInline: 12, borderRadius:8, minHeight:0 }}
+                beforeAlign="center"
+                contentAlign="center"
+                afterAlign="center"
+                before={<Icon20CalendarCheckOutline style={{fill: "white"}}/>}
+              >
+                <Text weight="2" style={{color: "white"}}>{new Date(dateKey).toLocaleDateString('ru-RU', {
+                  weekday: 'long',
+                  day: 'numeric',
+                  month: 'long',
+                  year: 'numeric'
+                })}</Text>
+              </RichCell>
+
+              {items.map((item, index) => ( 
+                <RichCell
+                  key={`${dateKey}-${index}`}
+                  beforeAlign="center"
+                  contentAlign="left"
+                  afterAlign="center"
+                  multiline
+                  before={
+                    <Card 
+                      Component="div" 
+                      style={{ 
+                        backgroundColor: item.цвет,
+                        minWidth: 50,
+                        borderRadius: 8
+                      }}
+                    >
+                      <Box 
+                        style={{ 
+                          flex: 1, 
+                          textAlign: "center", 
+                          alignContent: "center",
+                          padding: "12px 8px"
+                        }} 
+                        minBlockSize={70}
+                      >
+                        <Text weight="2" style={{ fontSize: 16, lineHeight: 1.2, color: "white"}}>
+                          {item.начало}
+                        </Text>
+                        <Text 
+                          style={{ 
+                            fontSize: 12, 
+                            opacity: 0.8,
+                            lineHeight: 1.2,
+                            marginTop: 2,
+                            color: "white"
+                          }}
+                        >
+                          {item.конец}
+                        </Text>
+                      </Box>
+                    </Card>
+                  }
+                  after={
+                    <div style={{ textAlign: "center" }}>
+                      <Text weight="2" style={{ fontSize: 14 }}>
+                        {item.аудитория}
+                      </Text>
+                      {item.преподаватель && (
+                        <Text 
+                          style={{ 
+                            fontSize: 12, 
+                            color: "var(--vkui--color_text_secondary)",
+                            marginTop: 4
+                          }}
+                        >
+                          {item.преподаватель}
+                        </Text>
+                      )}
+                    </div>
+                  }
+                >
+                  <div style={{ padding: "4px 0" }}>
+                    <Text 
+                      weight="2" 
+                      style={{ 
+                        fontSize: 16, 
+                        lineHeight: 1.3,
+                        marginBottom: 4
+                      }}
+                    >
+                      {item.дисциплина}
+                    </Text>
+                    
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                        <Icon20CalendarCheckOutline style={{ color: "var(--vkui--color_icon_secondary)" }} />
+                        <Text 
+                          style={{ 
+                            fontSize: 14,
+                            color: "var(--vkui--color_text_secondary)"
+                          }}
+                        >
+                          {new Date(item.дата).toLocaleDateString('ru-RU', {
+                            weekday: 'short',
+                            day: 'numeric',
+                            month: 'short'
+                          })}
+                        </Text>
+                      </div>
+                      
+                      {item.группа && (
+                        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                          <Icon12User style={{ color: "var(--vkui--color_icon_secondary)" }} />
+                          <Text 
+                            style={{ 
+                              fontSize: 14,
+                              color: "var(--vkui--color_text_secondary)"
+                            }}
+                          >
+                            {item.группа}
+                          </Text>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {item.тип && (
+                      <Text 
+                        style={{ 
+                          marginTop: 4,
+                          color: "var(--vkui--color_accent_violet)",
+                          fontSize: 14
+                        }}
+                      >
+                        {item.тип}
+                      </Text>
+                    )}
+                  </div>
+                </RichCell>
+              ))}
+            </div>
+          ))
+        ) : isLoading ? "" : (
+          <Text style={{ textAlign: "center", padding: 20 }}>Нет расписания</Text>
+        )}
+      </Group>
+    </Panel>
+  );
 };
 
+Rasp.propTypes = {
+  id: PropTypes.string.isRequired,
+};
