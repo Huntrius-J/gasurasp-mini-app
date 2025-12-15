@@ -1,3 +1,4 @@
 build.zip
 /build/*
 vk-hosting-config.json
+/node_modules/.vite/*
