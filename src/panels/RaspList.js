@@ -86,9 +86,6 @@ export const RaspList = ({id}) => {
     return(      
 
           <Panel id={id}>
-            <PanelHeader >
-              Расписание ГАГУ
-            </PanelHeader>
             <Group style={{paddingInline: 15}}>
             <CustomSelect
               style={{textAlign:"center"}}
