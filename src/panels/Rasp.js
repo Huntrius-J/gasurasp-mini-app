@@ -159,7 +159,7 @@ const isSameDay = (date1, date2) => {
               }} 
             />
           ))}
-            {eventForDay.length>=3?(<span style={{
+            {eventForDay.length>3?(<span style={{
               fontSize: '10px',
               fontWeight: 'bold',
               width: '8px',
