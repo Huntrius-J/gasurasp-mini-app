@@ -1,12 +1,13 @@
-import { Panel, PanelHeader, DateInput, Card, RichCell, Group, Box, Text, PanelHeaderBack, Spinner } from '@vkontakte/vkui';
+import { Panel, PanelHeader, DateInput, Card, RichCell, Group, Box, Text, PanelHeaderBack, Spinner, } from '@vkontakte/vkui';
 import { useRouteNavigator, useSearchParams } from '@vkontakte/vk-mini-apps-router';
 import PropTypes from 'prop-types';
-import { useState, useLayoutEffect} from 'react';
+import React, { useState, useLayoutEffect} from 'react';
 import { Icon12User, Icon20CalendarCheckOutline } from '@vkontakte/icons';
 
 export const Rasp = ({id}) => {
   const routeNavigator = useRouteNavigator();
   const [data, setData] = useState([]); 
+  const [dataFull, setDataFull] = useState([]); 
   const [date, setDate] = useState(new Date());
   const [isLoading, setIsLoading] = useState(false);
 
@@ -38,6 +39,19 @@ export const Rasp = ({id}) => {
       const response = await fetch(url);
       const result = await response.json();
       setData(result.data);
+
+      if (selectedItem.type === 'group') {
+        url = `https://stud.gasu.ru/api/Rasp?idGroup=${selectedItem.id}`;
+      } else if (selectedItem.type === 'teacher') {
+        url = `https://stud.gasu.ru/api/Rasp?idTeacher=${selectedItem.id}`;
+      } else if (selectedItem.type === 'auditorium') {
+        url = `https://stud.gasu.ru/api/Rasp?idAudLine=${selectedItem.id}`;
+      }
+
+      const response2 = await fetch(url);
+      const result2 = await response2.json();
+      setDataFull(result2.data);
+
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
@@ -59,6 +73,22 @@ export const Rasp = ({id}) => {
         return "Расписание";
     }
   };
+
+  const getEvents = () => {
+    if (!dataFull || !dataFull.rasp) return [];
+
+      const events = [];
+
+      dataFull.rasp.forEach((item) => {
+        const eventDate = item.дата;
+        const color = item.цвет;
+        events.push({date:new Date(eventDate.split('T')[0]),color:color})
+      });
+      
+    
+    return events;
+
+  }
 
   const groupCardsByDate = () => {
     if (!data || !data.rasp) return [];
@@ -86,13 +116,73 @@ export const Rasp = ({id}) => {
     fetchData(newDate);
   };
 
+  const events = getEvents();
+
+const isSameDay = (date1, date2) => {
+  return date1.getDate() === date2.getDate() &&
+         date1.getMonth() === date2.getMonth() &&
+         date1.getFullYear() === date2.getFullYear();
+};
+
+  
+
+  const renderDayContent = (day) => {
+    const eventForDay = events.filter(event => 
+      isSameDay(day, event.date)
+    );
+    return (
+      <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+        <div style={{ 
+          display: 'flex', 
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '100%'
+        }}>
+          <span>{day.getDate()}</span>
+
+          <div style={{ 
+          display: 'flex', 
+          flexDirection: 'row',
+          gap: '2px',
+          marginTop: '2px'
+        }}>
+            {eventForDay.slice(0, 3).map((event, index) => (
+            <div 
+              key={index}
+              style={{
+                width: '6px',
+                height: '6px',
+                borderRadius: '50%',
+                backgroundColor: event.color,
+                marginTop: '2px'
+              }} 
+            />
+          ))}
+            {eventForDay.length>=3?(<span style={{
+              fontSize: '10px',
+              fontWeight: 'bold',
+              width: '8px',
+              height: '8px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              +
+            </span>) : ''}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const groupedData = groupCardsByDate();
   
   return (
     <Panel id={id}>
       <PanelHeader before={<PanelHeaderBack onClick={() => routeNavigator.back()} />}>{<Text weight="2" style={{fontSize:16}}>{getPanelHeader()}</Text>}</PanelHeader>
       <Group style={{padding: 12}}>
-        <DateInput style={{textAlign:"center"}} value={date} onChange={handleDateChange} after=""  disabled={isLoading} defaultValue={new Date()} accessible/>
+        <DateInput renderDayContent={renderDayContent} style={{textAlign:"center"}} value={date} onChange={handleDateChange} after=""  disabled={isLoading} defaultValue={new Date()} accessible/>
       </Group>
       {isLoading ? (<Spinner style={{alignContent: "center", flex: 1}} size="xl" />) :""}
 
