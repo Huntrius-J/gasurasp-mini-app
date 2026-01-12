@@ -17,8 +17,13 @@ export const RaspList = ({id}) => {
       setIsLoading(true);
       try {
         const year = new Date().getFullYear();
-        const url = `https://stud.gasu.ru/api/${searchBy}?year=${year}-${year+1}`;
+
+        const url2 = 'https://stud.gasu.ru/api/Rasp/ListYears'
+
+        const response2 = await fetch(url2);
+        const result2 = await response2.json();
         
+        const url = `https://stud.gasu.ru/api/${searchBy}?year=${result2.data.years[result2.data.years.length-1]}`;
         const response = await fetch(url);
         const result = await response.json();
         setData(result.data);
