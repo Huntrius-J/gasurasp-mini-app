@@ -216,8 +216,21 @@ const isSameDay = (date1, date2) => {
 , [selectedItem?.id]);
 
   function toggleFavourite() {
-  const key = selectedItem.id;
-  const value = `${selectedItem.type}::${selectedItem.name}`;
+    const key = selectedItem.id;
+    const value = `${selectedItem.type}::${selectedItem.name}`;
+
+    storage.setItem(key, value);
+    const check = (platform=='android' || platform=='ios')?storage.getItem(key).value:storage.getItem(key)
+    console.log(check);
+    if(check)
+    {
+      ids.push(key);
+      storage.setItem('favorite_ids', JSON.stringify(ids));
+      message = check.toString();
+      showSnackbar();
+      console.log(`Данные [${key}] успешно добавлены в избранное`);
+      setIsFavourite(true);
+    }
 
     try {
       const result = (platform=='android' || platform=='ios')?storage.getItem('favorite_ids').value:storage.getItem('favorite_ids');
