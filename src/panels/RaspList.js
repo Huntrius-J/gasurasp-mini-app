@@ -29,7 +29,7 @@ export const RaspList = ({id}) => {
   };
 
   function getAllFavorites() {
-    return ((platform=='android' || platform=='ios')?storage.getItem('favorite_ids'):Promise.resolve(storage.getItem('favorite_ids'))).then((result) => {
+    return ((platform=='android' || platform=='ios')?Promise.resolve(storage.getItem('favorite_ids')).value:Promise.resolve(storage.getItem('favorite_ids'))).then((result) => {
       console.log(result)
       message = result.toString();
       showSnackbar();

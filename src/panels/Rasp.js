@@ -16,7 +16,7 @@ export const Rasp = ({id}) => {
   const type = searchParams.get('type');
   const idParam = searchParams.get('id');
   const name = searchParams.get('name');
-  const platform = 'android';//window.WebApp.platform;
+  const platform = window.WebApp.platform;
   const storage = (platform=='android' || platform=='ios')?window.WebApp.DeviceStorage:window.localStorage;
   var message = '';
   const showSnackbar = () => {
@@ -199,7 +199,7 @@ const isSameDay = (date1, date2) => {
       const result = storage.getItem('favorite_ids');
       if(result != null)
       {
-        ((platform=='android' || platform=='ios')?storage.getItem('favorite_ids'):Promise.resolve(storage.getItem('favorite_ids'))).then((result) => {
+        ((platform=='android' || platform=='ios')?Promise.resolve(storage.getItem('favorite_ids')).value:Promise.resolve(storage.getItem('favorite_ids'))).then((result) => {
           if (result) {
             try {
               const ids = JSON.parse(result);
@@ -220,7 +220,7 @@ const isSameDay = (date1, date2) => {
   const value = `${selectedItem.type}::${selectedItem.name}`;
 
     try {
-      const result = storage.getItem('favorite_ids');
+      const result = (platform=='android' || platform=='ios')?storage.getItem('favorite_ids').value:storage.getItem('favorite_ids');
       let ids = [];
       if (result) {
         try {
@@ -233,7 +233,8 @@ const isSameDay = (date1, date2) => {
 
       if (isAlreadyFavourite) {
         storage.removeItem(key);
-        const check = storage.getItem(key);
+        const check = (platform=='android' || platform=='ios')?storage.getItem(key).value:storage.getItem(key)
+        console.log(check);
         if(check == null)
         {
 
@@ -248,17 +249,13 @@ const isSameDay = (date1, date2) => {
       } else {
 
         storage.setItem(key, value);
-        const check = storage.getItem(key);
+        const check = (platform=='android' || platform=='ios')?storage.getItem(key).value:storage.getItem(key)
+        console.log(check);
         if(check)
         {
           ids.push(key);
           storage.setItem('favorite_ids', JSON.stringify(ids));
-          message = Promise.resolve(check.value).toString();
-          Promise.resolve(storage.getItem(key)).then((result)=>
-          {
-            console.log(result);
-          });
-          message = result.toString();
+          message = check.toString();
           showSnackbar();
           console.log(`Данные [${key}] успешно добавлены в избранное`);
           setIsFavourite(true);
