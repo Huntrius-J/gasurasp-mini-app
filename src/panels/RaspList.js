@@ -29,15 +29,13 @@ export const RaspList = ({id}) => {
   };
 
   function getAllFavorites() {
-    return ((platform=='android' || platform=='ios')?storage.getItem('favorite_ids'):Promise.resolve(storage.getItem('favorite_ids'))).then((result) => {
+    return Promise.resolve(storage.getItem('favorite_ids')).then((result) => {
       console.log((platform=='android' || platform=='ios')?result.value:result)
-      message = result.toString();
-      showSnackbar();
-      if (!result) {
+      if (!(platform=='android' || platform=='ios')?result.value:result) {
         return []; 
       }
 
-      const ids = JSON.parse(result);
+      const ids = JSON.parse((platform=='android' || platform=='ios')?result.value:result);
 
       const promises = (platform=='android' || platform=='ios')?ids.map(id => storage.getItem(id)):ids.map(id => {
         const itemValue = storage.getItem(id);

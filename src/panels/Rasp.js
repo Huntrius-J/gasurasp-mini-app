@@ -219,19 +219,6 @@ const isSameDay = (date1, date2) => {
     const key = selectedItem.id;
     const value = `${selectedItem.type}::${selectedItem.name}`;
 
-    storage.setItem(key, value);
-    const check = storage.getItem(key)
-    console.log(check);
-    if(check)
-    {
-      ids.push(key);
-      storage.setItem('favorite_ids', JSON.stringify(ids));
-      message = check.toString();
-      showSnackbar();
-      console.log(`Данные [${key}] успешно добавлены в избранное`);
-      setIsFavourite(true);
-    }
-
     try {
       const result = storage.getItem('favorite_ids');
       let ids = [];
