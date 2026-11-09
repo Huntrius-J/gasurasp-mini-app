@@ -29,8 +29,8 @@ export const RaspList = ({id}) => {
   };
 
   function getAllFavorites() {
-    return ((platform=='android' || platform=='ios')?Promise.resolve(storage.getItem('favorite_ids')).value:Promise.resolve(storage.getItem('favorite_ids'))).then((result) => {
-      console.log(result)
+    return ((platform=='android' || platform=='ios')?storage.getItem('favorite_ids'):Promise.resolve(storage.getItem('favorite_ids'))).then((result) => {
+      console.log((platform=='android' || platform=='ios')?result.value:result)
       message = result.toString();
       showSnackbar();
       if (!result) {
@@ -39,7 +39,7 @@ export const RaspList = ({id}) => {
 
       const ids = JSON.parse(result);
 
-       const promises = ids.map(id => {
+      const promises = (platform=='android' || platform=='ios')?ids.map(id => storage.getItem(id)):ids.map(id => {
         const itemValue = storage.getItem(id);
         return { id: id, value: itemValue };
       });
@@ -50,7 +50,7 @@ export const RaspList = ({id}) => {
           .map(item => {
             const [type, name] = item.value.split('::');
             return {
-              id: item.id,
+              id: (platform=='android' || platform=='ios')?item.key:item.id,
               type: type,
               name: name
             };

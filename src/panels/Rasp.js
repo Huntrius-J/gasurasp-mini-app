@@ -199,10 +199,10 @@ const isSameDay = (date1, date2) => {
       const result = ((platform=='android' || platform=='ios')?storage.getItem('favorite_ids').value:storage.getItem('favorite_ids'));
       if(result != null)
       {
-        ((platform=='android' || platform=='ios')?Promise.resolve(storage.getItem('favorite_ids')).value:Promise.resolve(storage.getItem('favorite_ids'))).then((result) => {
+        ((platform=='android' || platform=='ios')?storage.getItem('favorite_ids'):Promise.resolve(storage.getItem('favorite_ids'))).then((result) => {
           if (result) {
             try {
-              const ids = JSON.parse(result);
+              const ids = JSON.parse((platform=='android' || platform=='ios')?result.value:result);
               setIsFavourite(ids.includes(selectedItem.id));
             } catch (e) {
               setIsFavourite(false);
@@ -233,11 +233,11 @@ const isSameDay = (date1, date2) => {
     }
 
     try {
-      const result = (platform=='android' || platform=='ios')?storage.getItem('favorite_ids').value:storage.getItem('favorite_ids');
+      const result = storage.getItem('favorite_ids');
       let ids = [];
-      if (result) {
+      if ((platform=='android' || platform=='ios')?result.value:result) {
         try {
-          ids = JSON.parse(result);
+          ids = JSON.parse((platform=='android' || platform=='ios')?result.value:result);
         } catch (e) {
           ids = [];
         }
@@ -246,9 +246,9 @@ const isSameDay = (date1, date2) => {
 
       if (isAlreadyFavourite) {
         storage.removeItem(key);
-        const check = (platform=='android' || platform=='ios')?storage.getItem(key).value:storage.getItem(key)
-        console.log(check);
-        if(check == null)
+        const check = storage.getItem(key)
+        console.log((platform=='android' || platform=='ios')?check.value:check);
+        if((platform=='android' || platform=='ios')?check.value:check == null)
         {
 
         
@@ -262,9 +262,9 @@ const isSameDay = (date1, date2) => {
       } else {
 
         storage.setItem(key, value);
-        const check = (platform=='android' || platform=='ios')?storage.getItem(key).value:storage.getItem(key)
-        console.log(check);
-        if(check)
+        const check = storage.getItem(key)
+        console.log((platform=='android' || platform=='ios')?check.value:check);
+        if((platform=='android' || platform=='ios')?check.value:check)
         {
           ids.push(key);
           storage.setItem('favorite_ids', JSON.stringify(ids));
