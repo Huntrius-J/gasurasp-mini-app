@@ -203,7 +203,9 @@ const isSameDay = (date1, date2) => {
           if ((platform=='android' || platform=='ios')?result.value:result) {
             try {
               const ids = JSON.parse((platform=='android' || platform=='ios')?result.value:result);
+              console.log(ids);
               setIsFavourite(ids.includes(selectedItem.id));
+              console.log(ids.includes(selectedItem.id));
             } catch (e) {
               setIsFavourite(false);
             }
@@ -222,10 +224,11 @@ const isSameDay = (date1, date2) => {
     try {
       const result = storage.getItem('favorite_ids');
       let ids = [];
-      if ((platform=='android' || platform=='ios')?result.value:result) {
+      if (((platform=='android' || platform=='ios')?result.value:result)) {
         try {
-          ids = JSON.parse((platform=='android' || platform=='ios')?result.value:result);
+          ids = JSON.parse(((platform=='android' || platform=='ios')?result.value:result));
         } catch (e) {
+          console.log(e);
           ids = [];
         }
       }
@@ -235,7 +238,7 @@ const isSameDay = (date1, date2) => {
       if (isAlreadyFavourite) {
         storage.removeItem(key);
         const check = storage.getItem(key)
-        console.log((platform=='android' || platform=='ios')?check.value:check);
+        console.log(((platform=='android' || platform=='ios')?check.value:check));
         if((platform=='android' || platform=='ios')?check.value:check == null)
         {
 
@@ -251,8 +254,8 @@ const isSameDay = (date1, date2) => {
 
         storage.setItem(key, value);
         const check = storage.getItem(key)
-        console.log((platform=='android' || platform=='ios')?check.value:check);
-        if((platform=='android' || platform=='ios')?check.value:check)
+        console.log(((platform=='android' || platform=='ios')?check.value:check));
+        if(((platform=='android' || platform=='ios')?check.value:check))
         {
           ids.push(key);
           storage.setItem('favorite_ids', JSON.stringify(ids));

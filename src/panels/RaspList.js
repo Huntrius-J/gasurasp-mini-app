@@ -39,7 +39,7 @@ export const RaspList = ({id}) => {
 
       const promises = ids.map(id => {
         const itemValue = storage.getItem(id);
-        return { id: id, value: itemValue };
+        return { id: id, value: (platform=='android' || platform=='ios')?itemValue.value:itemValue};
       });
 
       return Promise.all(promises).then((results) => {
