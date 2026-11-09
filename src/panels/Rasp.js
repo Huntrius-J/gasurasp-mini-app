@@ -248,10 +248,15 @@ const isSameDay = (date1, date2) => {
         else
         {
           storage.removeItem(key);
+          const check = storage.getItem(key);
+          if(check == null)
+          {
+            removed = true;
+          }
         }
 
-        console.log(((platform=='android' || platform=='ios')?check.value:check));
-        if((platform=='android' || platform=='ios')?removed:storage.getItem(key) == null)
+        console.log(removed);
+        if(removed)
         {
           const updatedIds = ids.filter(id => id !== key);
           storage.setItem('favorite_ids', JSON.stringify(updatedIds));
@@ -272,9 +277,14 @@ const isSameDay = (date1, date2) => {
         else
         {
           storage.setItem(key, value);
+          const check = storage.getItem(key);
+          if(check != null)
+          {
+            updated = true;
+          }
         }
-        
-        if(((platform=='android' || platform=='ios')?updated:storage.getItem(key)!=null))
+        console.log(updated);
+        if(updated = true)
         {
           ids.push(key);
           storage.setItem('favorite_ids', JSON.stringify(ids));
