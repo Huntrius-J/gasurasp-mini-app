@@ -274,7 +274,7 @@ const isSameDay = (date1, date2) => {
           storage.setItem(key, value);
         }
         
-        if(((platform=='android' || platform=='ios')?updated:storage.getItem(key)))
+        if(((platform=='android' || platform=='ios')?updated:storage.getItem(key)!=null))
         {
           ids.push(key);
           storage.setItem('favorite_ids', JSON.stringify(ids));
