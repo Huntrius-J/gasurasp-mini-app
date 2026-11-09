@@ -30,17 +30,22 @@ export const RaspList = ({id}) => {
 
   function getAllFavorites() {
     return Promise.resolve(storage.getItem('favorite_ids')).then((result) => {
-      console.log((platform=='android' || platform=='ios')?result.value:result)
-      if (!(platform=='android' || platform=='ios')?result.value:result) {
+      const data = (platform=='android' || platform=='ios')?result.value:result;
+
+      if (!data) {
         return []; 
       }
 
-      const ids = JSON.parse((platform=='android' || platform=='ios')?result.value:result);
+
+
+      const ids = JSON.parse(data);
 
       const promises = ids.map(id => {
-        const itemValue = storage.getItem(id);
-        return { id: id, value: (platform=='android' || platform=='ios')?itemValue.value:itemValue};
+      return Promise.resolve(storage.getItem(id)).then((itemResult) => {
+        const itemValue = (platform=='android' || platform=='ios') ? itemResult?.value : itemResult;
+        return { id: id, value: itemValue };
       });
+    });
 
       return Promise.all(promises).then((results) => {
         console.log(results);

@@ -196,37 +196,35 @@ const isSameDay = (date1, date2) => {
 
   useEffect(() => {
       if (!selectedItem?.id) return;
-      const result = storage.getItem('favorite_ids');
-      if((platform=='android' || platform=='ios')?result.value:result != null)
-      {
-        Promise.resolve(storage.getItem('favorite_ids')).then((result) => {
-          if ((platform=='android' || platform=='ios')?result.value:result) {
-            try {
-              const ids = JSON.parse((platform=='android' || platform=='ios')?result.value:result);
-              console.log(ids);
-              setIsFavourite(ids.includes(selectedItem.id));
-              console.log(ids.includes(selectedItem.id));
-            } catch (e) {
-              setIsFavourite(false);
-            }
-          } else {
+      Promise.resolve(storage.getItem('favorite_ids')).then((result) => {
+        const data = (platform=='android' || platform=='ios')?result.value:result;
+        if (data != null) {
+          try {
+            const ids = JSON.parse((platform=='android' || platform=='ios')?result.value:result);
+            console.log(ids);
+            setIsFavourite(ids.includes(selectedItem.id));
+            console.log(ids.includes(selectedItem.id));
+          } catch (e) {
             setIsFavourite(false);
           }
-        });
-      }
+        } else {
+          setIsFavourite(false);
+        }
+      });
     }
 , [selectedItem?.id]);
 
-  function toggleFavourite() {
+  async function toggleFavourite() {
     const key = selectedItem.id;
     const value = `${selectedItem.type}::${selectedItem.name}`;
 
     try {
-      const result = storage.getItem('favorite_ids');
+      const result = await storage.getItem('favorite_ids');
       let ids = [];
-      if (((platform=='android' || platform=='ios')?result.value!=null:result!=null)) {
+      const data = (platform=='android' || platform=='ios')?result.value:result;
+      if (data!=null) {
         try {
-          ids = JSON.parse(((platform=='android' || platform=='ios')?result.value:result));
+          ids = JSON.parse(data);
           console.log('идис:');
           console.log(ids);
         } catch (e) {
