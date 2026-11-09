@@ -37,7 +37,7 @@ export const RaspList = ({id}) => {
 
       const ids = JSON.parse((platform=='android' || platform=='ios')?result.value:result);
 
-      const promises = (platform=='android' || platform=='ios')?ids.map(id => storage.getItem(id)):ids.map(id => {
+      const promises = ids.map(id => {
         const itemValue = storage.getItem(id);
         return { id: id, value: itemValue };
       });
@@ -48,7 +48,7 @@ export const RaspList = ({id}) => {
           .map(item => {
             const [type, name] = item.value.split('::');
             return {
-              id: (platform=='android' || platform=='ios')?item.key:item.id,
+              id: item.id,
               type: type,
               name: name
             };
