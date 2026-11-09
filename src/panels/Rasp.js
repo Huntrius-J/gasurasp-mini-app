@@ -236,26 +236,45 @@ const isSameDay = (date1, date2) => {
       const isAlreadyFavourite = ids.includes(key);
 
       if (isAlreadyFavourite) {
-        storage.removeItem(key);
-        const check = storage.getItem(key)
-        console.log(((platform=='android' || platform=='ios')?check.value:check));
-        if((platform=='android' || platform=='ios')?check.value:check == null)
+        let removed = false;
+        if(platform=='android' || platform=='ios')
         {
+          storage.removeItem(key).then(({status}) => {
+            if(status === 'removed') {
+                removed = true;
+            }
+          });
+        }
+        else
+        {
+          storage.removeItem(key);
+        }
 
-        
+        console.log(((platform=='android' || platform=='ios')?check.value:check));
+        if((platform=='android' || platform=='ios')?removed:storage.getItem(key) == null)
+        {
           const updatedIds = ids.filter(id => id !== key);
-          
           storage.setItem('favorite_ids', JSON.stringify(updatedIds));
           console.log(`Данные [${key}] успешно удалены из избранного`);
           setIsFavourite(false);
         }
 
       } else {
-
-        storage.setItem(key, value);
-        const check = storage.getItem(key)
-        console.log(((platform=='android' || platform=='ios')?check.value:check));
-        if(((platform=='android' || platform=='ios')?check.value:check))
+        let updated = false;
+        if(platform=='android' || platform=='ios')
+        {
+          storage.setItem(key, value).then(({status}) => {
+            if(status === 'updated') {
+                updated = true;
+            }
+          });
+        }
+        else
+        {
+          storage.setItem(key, value);
+        }
+        
+        if(((platform=='android' || platform=='ios')?updated:storage.getItem(key)))
         {
           ids.push(key);
           storage.setItem('favorite_ids', JSON.stringify(ids));
