@@ -12,16 +12,22 @@ export const RaspList = ({id}) => {
   const [filteredData,setFilteredData] = useState();
   const [searchBy,setSearchBy] = useState("raspGroupList");
   const [selectIcon,setSelectIcon] = useState(<Icon16Users></Icon16Users>);
+  const platform = window.WebApp.platform;
+  const storage = (platform=='android' || platform=='ios')?window.WebApp.DeviceStorage:window.localStorage;
 
   function getAllFavorites() {
-    return window.WebApp.DeviceStorage.getItem('favorite_ids').then((result) => {
-      if (!result || !result.value) {
+    return Promise.resolve(storage.getItem('favorite_ids')).then((result) => {
+      console.log(result)
+      if (!result) {
         return []; 
       }
 
-      const ids = JSON.parse(result.value);
+      const ids = JSON.parse(result);
 
-      const promises = ids.map(id => window.WebApp.DeviceStorage.getItem(id));
+       const promises = ids.map(id => {
+        const itemValue = storage.getItem(id);
+        return { id: id, value: itemValue };
+      });
 
       return Promise.all(promises).then((results) => {
         return results
@@ -29,7 +35,7 @@ export const RaspList = ({id}) => {
           .map(item => {
             const [type, name] = item.value.split('::');
             return {
-              id: item.key,
+              id: item.id,
               type: type,
               name: name
             };
@@ -41,9 +47,10 @@ export const RaspList = ({id}) => {
   const fetchData = async (searchBy) => {
       if(searchBy == 'raspFavour')
       {
-        getAllFavorites().then(favorites => setFilteredData(favorites));
-        
-        
+        getAllFavorites().then(favorites => {
+          setFilteredData(favorites);
+          console.log(favorites);
+        });
       }
       else
       {
@@ -114,6 +121,11 @@ export const RaspList = ({id}) => {
       searchParams.set('name', item.name);
     } else if (searchBy === 'raspAudList') {
       searchParams.set('type', 'auditorium');
+      searchParams.set('id', item.id.toString());
+      searchParams.set('name', item.name);
+    }
+    else if (searchBy === 'raspFavour') {
+      searchParams.set('type', item.type);
       searchParams.set('id', item.id.toString());
       searchParams.set('name', item.name);
     }

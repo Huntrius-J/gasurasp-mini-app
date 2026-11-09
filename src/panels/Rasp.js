@@ -15,6 +15,8 @@ export const Rasp = ({id}) => {
   const type = searchParams.get('type');
   const idParam = searchParams.get('id');
   const name = searchParams.get('name');
+  const platform = window.WebApp.platform;
+  const storage = (platform=='android' || platform=='ios')?window.WebApp.DeviceStorage:window.localStorage;
   
   const selectedItem = type && idParam ? {
     type: type,
@@ -178,63 +180,75 @@ const isSameDay = (date1, date2) => {
 
   const [isFavourite, setIsFavourite] = useState(false);
 
-  // 2. Проверяем статус при загрузке компонента или при смене выбранного элемента
   useEffect(() => {
     if (!selectedItem?.id) return;
-
-    window.WebApp.DeviceStorage.getItem('favorite_ids').then((result) => {
-      if (result && result.value) {
-        try {
-          const ids = JSON.parse(result.value);
-          // Если ID текущего элемента есть в массиве — ставим true
-          setIsFavourite(ids.includes(selectedItem.id));
-        } catch (e) {
-          setIsFavourite(false);
-        }
-      } else {
-        setIsFavourite(false);
+    const result = storage.getItem('favorite_ids');
+    if(result != null)
+    {
+       Promise.resolve(storage.getItem('favorite_ids')).then((result) => {
+          if (result) {
+            try {
+              const ids = JSON.parse(result);
+              // Если ID текущего элемента есть в массиве — ставим true
+              setIsFavourite(ids.includes(selectedItem.id));
+            } catch (e) {
+              setIsFavourite(false);
+            }
+          } else {
+            setIsFavourite(false);
+          }
+        });
       }
-    });
-  }, [selectedItem?.id]);
+    }
+, [selectedItem?.id]);
 
   function toggleFavourite() {
-    const key = selectedItem.id;
-    const value = `${selectedItem.type}::${selectedItem.name}`;
+  const key = selectedItem.id;
+  const value = `${selectedItem.type}::${selectedItem.name}`;
 
-    window.WebApp.DeviceStorage.getItem('favorite_ids').then((result) => {
+    try {
+      const result = storage.getItem('favorite_ids');
       let ids = [];
-      if (result && result.value) {
+      if (result) {
         try {
-          ids = JSON.parse(result.value);
+          ids = JSON.parse(result);
         } catch (e) {
           ids = [];
         }
       }
-
       const isAlreadyFavourite = ids.includes(key);
 
       if (isAlreadyFavourite) {
-        window.WebApp.DeviceStorage.removeItem(key).then(() => {
+        storage.removeItem(key);
+        const check = storage.getItem(key);
+        if(check == null)
+        {
+
+        
           const updatedIds = ids.filter(id => id !== key);
           
-          window.WebApp.DeviceStorage.setItem('favorite_ids', JSON.stringify(updatedIds)).then(() => {
-            console.log(`Данные [${key}] успешно удалены из избранного`);
-          });
-        });
+          storage.setItem('favorite_ids', JSON.stringify(updatedIds));
+          console.log(`Данные [${key}] успешно удалены из избранного`);
+          setIsFavourite(false);
+        }
 
       } else {
-        window.WebApp.DeviceStorage.setItem(key, value).then(({ status }) => {
-          if (status === 'updated') {
-            ids.push(key);
-            window.WebApp.DeviceStorage.setItem('favorite_ids', JSON.stringify(ids)).then(() => {
-              console.log(`Данные [${key}] успешно добавлены в избранное`);
-              
-              // ТУТ МОЖНО ОБНОВИТЬ СОСТОЯНИЕ (STATE) В REACT, ЧТОБЫ ИКОНКА ПОМЕНЯЛАСЬ
-            });
-          }
-        });
+
+        storage.setItem(key, value);
+        const check = storage.getItem(key);
+        if(check)
+        {
+          ids.push(key);
+          storage.setItem('favorite_ids', JSON.stringify(ids));
+          
+          console.log(`Данные [${key}] успешно добавлены в избранное`);
+          setIsFavourite(true);
+        }
       }
-    });
+
+    } catch (error) {
+      console.error('Ошибка при работе с localStorage:', error);
+    }
   }
 
   const groupedData = groupCardsByDate();
