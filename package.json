@@ -15,7 +15,7 @@
     "@vkontakte/icons": "^3.80.0",
     "@vkontakte/vk-bridge": "^2.13.0",
     "@vkontakte/vk-bridge-react": "^1.0.1",
-    "@vkontakte/vk-mini-apps-router": "^1.7.6",
+    "@vkontakte/vk-mini-apps-router": "^1.8.6",
     "@vkontakte/vkui": "^8.4.3",
     "gh-pages": "^6.3.0",
     "prop-types": "^15.8.1",
