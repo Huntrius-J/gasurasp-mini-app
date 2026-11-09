@@ -1,10 +1,11 @@
-import { Panel, PanelHeader, DateInput, Card, RichCell, Group, Box, Text, PanelHeaderBack, Spinner, Button,PanelHeaderButton } from '@vkontakte/vkui';
+import { Panel, PanelHeader, DateInput, Card, RichCell, Group, Box, Text, PanelHeaderBack,Snackbar, Spinner, Button,PanelHeaderButton } from '@vkontakte/vkui';
 import { useRouteNavigator, useSearchParams } from '@vkontakte/vk-mini-apps-router';
 import PropTypes, { func } from 'prop-types';
 import React, { useState, useLayoutEffect, useEffect} from 'react';
 import { Icon12User, Icon20CalendarCheckOutline, Icon24Favorite, Icon24FavoriteOutline} from '@vkontakte/icons';
 
 export const Rasp = ({id}) => {
+  const [snackbar, setSnackbar] = useState(null);
   const routeNavigator = useRouteNavigator();
   const [data, setData] = useState([]); 
   const [dataFull, setDataFull] = useState([]); 
@@ -15,8 +16,21 @@ export const Rasp = ({id}) => {
   const type = searchParams.get('type');
   const idParam = searchParams.get('id');
   const name = searchParams.get('name');
-  const platform = window.WebApp.platform;
+  const platform = 'android';//window.WebApp.platform;
   const storage = (platform=='android' || platform=='ios')?window.WebApp.DeviceStorage:window.localStorage;
+  var message = '';
+  const showSnackbar = () => {
+    if (snackbar) return;
+    setSnackbar(
+      <Snackbar
+        onClosed={() => setSnackbar(null)}
+        action="Поделиться"
+      >
+      {message}
+      </Snackbar>,
+    );
+  };
+  
   
   const selectedItem = type && idParam ? {
     type: type,
@@ -239,7 +253,13 @@ const isSameDay = (date1, date2) => {
         {
           ids.push(key);
           storage.setItem('favorite_ids', JSON.stringify(ids));
-          
+          message = Promise.resolve(check.value).toString();
+          Promise.resolve(storage.getItem(key)).then((result)=>
+          {
+            console.log(result);
+          });
+          message = result.toString();
+          showSnackbar();
           console.log(`Данные [${key}] успешно добавлены в избранное`);
           setIsFavourite(true);
         }
@@ -415,6 +435,7 @@ const isSameDay = (date1, date2) => {
           <Text style={{ textAlign: "center", padding: 20 }}>Нет расписания</Text>
         )}
       </Group>
+      {snackbar}
     </Panel>
   );
 };

@@ -1,10 +1,11 @@
-import { Panel, PanelHeader, Group, Text, CellButton, CustomSelect, Search, Spinner,Tabs, TabsItem} from '@vkontakte/vkui';
+import { Panel, PanelHeader, Group, Text, CellButton, CustomSelect, Search, Spinner,Tabs, TabsItem,Snackbar} from '@vkontakte/vkui';
 import { useRouteNavigator } from '@vkontakte/vk-mini-apps-router';
 import PropTypes from 'prop-types';
 import { useLayoutEffect, useState, useRef, useEffect} from 'react';
 import { Icon16BuildingOutline, Icon16User, Icon16Users,Icon24BuildingOutline, Icon24User, Icon24Users, Icon24Favorite} from '@vkontakte/icons';
 
 export const RaspList = ({id}) => {
+  const [snackbar, setSnackbar] = useState(null);
   const routeNavigator = useRouteNavigator();
   const [data,setData] = useState();
   const [isLoading, setIsLoading] = useState(false);
@@ -14,10 +15,24 @@ export const RaspList = ({id}) => {
   const [selectIcon,setSelectIcon] = useState(<Icon16Users></Icon16Users>);
   const platform = window.WebApp.platform;
   const storage = (platform=='android' || platform=='ios')?window.WebApp.DeviceStorage:window.localStorage;
+  var message = '';
+  const showSnackbar = () => {
+    if (snackbar) return;
+    setSnackbar(
+      <Snackbar
+        onClosed={() => setSnackbar(null)}
+        action="Поделиться"
+      >
+      {message}
+      </Snackbar>,
+    );
+  };
 
   function getAllFavorites() {
     return ((platform=='android' || platform=='ios')?storage.getItem('favorite_ids'):Promise.resolve(storage.getItem('favorite_ids'))).then((result) => {
       console.log(result)
+      message = result.toString();
+      showSnackbar();
       if (!result) {
         return []; 
       }
@@ -229,6 +244,7 @@ export const RaspList = ({id}) => {
           </CellButton>
           )):""}
           </Group>
+          {snackbar}
           </Panel>
 
       )
