@@ -220,7 +220,7 @@ const isSameDay = (date1, date2) => {
     const value = `${selectedItem.type}::${selectedItem.name}`;
 
     storage.setItem(key, value);
-    const check = (platform=='android' || platform=='ios')?storage.getItem(key).value:storage.getItem(key)
+    const check = storage.getItem(key)
     console.log(check);
     if(check)
     {
