@@ -181,15 +181,14 @@ const isSameDay = (date1, date2) => {
   const [isFavourite, setIsFavourite] = useState(false);
 
   useEffect(() => {
-    if (!selectedItem?.id) return;
-    const result = storage.getItem('favorite_ids');
-    if(result != null)
-    {
-       Promise.resolve(storage.getItem('favorite_ids')).then((result) => {
+      if (!selectedItem?.id) return;
+      const result = storage.getItem('favorite_ids');
+      if(result != null)
+      {
+        ((platform=='android' || platform=='ios')?storage.getItem('favorite_ids'):Promise.resolve(storage.getItem('favorite_ids'))).then((result) => {
           if (result) {
             try {
               const ids = JSON.parse(result);
-              // Если ID текущего элемента есть в массиве — ставим true
               setIsFavourite(ids.includes(selectedItem.id));
             } catch (e) {
               setIsFavourite(false);

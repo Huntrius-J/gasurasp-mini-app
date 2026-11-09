@@ -16,7 +16,7 @@ export const RaspList = ({id}) => {
   const storage = (platform=='android' || platform=='ios')?window.WebApp.DeviceStorage:window.localStorage;
 
   function getAllFavorites() {
-    return Promise.resolve(storage.getItem('favorite_ids')).then((result) => {
+    return ((platform=='android' || platform=='ios')?storage.getItem('favorite_ids'):Promise.resolve(storage.getItem('favorite_ids'))).then((result) => {
       console.log(result)
       if (!result) {
         return []; 
