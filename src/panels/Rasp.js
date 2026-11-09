@@ -196,22 +196,19 @@ const isSameDay = (date1, date2) => {
 
   useEffect(() => {
       if (!selectedItem?.id) return;
-      Promise.resolve(storage.getItem('favorite_ids')).catch(storage.setItem('favorite_ids', JSON.stringify([])))
-      .then((result) => {
+      Promise.resolve(storage.getItem('favorite_ids')).then((result) => {
         const data = (platform=='android' || platform=='ios')?result.value:result;
         if (data != null) {
           try {
             const ids = JSON.parse((platform=='android' || platform=='ios')?result.value:result);
-            console.log(ids);
             setIsFavourite(ids.includes(selectedItem.id));
-            console.log(ids.includes(selectedItem.id));
           } catch (e) {
             setIsFavourite(false);
           }
         } else {
           setIsFavourite(false);
         }
-      });
+      }).catch(() => storage.setItem('favorite_ids', JSON.stringify([])));
     }
 , [selectedItem?.id]);
 
@@ -230,7 +227,6 @@ const isSameDay = (date1, date2) => {
           ids = [];
         }
       }
-      console.log(ids);
       const isAlreadyFavourite = ids.includes(key);
 
       if (isAlreadyFavourite) {

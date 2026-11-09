@@ -29,8 +29,7 @@ export const RaspList = ({id}) => {
   };
 
   function getAllFavorites() {
-    return Promise.resolve(storage.getItem('favorite_ids')).catch(storage.setItem('favorite_ids', JSON.stringify([])))
-    .then((result) => {
+    return Promise.resolve(storage.getItem('favorite_ids')).then((result) => {
       const data = (platform=='android' || platform=='ios')?result.value:result;
 
       if (!data) {
@@ -59,7 +58,7 @@ export const RaspList = ({id}) => {
             };
           });
       });
-    });
+    }).catch(() => storage.setItem('favorite_ids', JSON.stringify([])));;
   }
 
   const fetchData = async (searchBy) => {
