@@ -288,8 +288,6 @@ const isSameDay = (date1, date2) => {
         {
           ids.push(key);
           storage.setItem('favorite_ids', JSON.stringify(ids));
-          message = check.toString();
-          showSnackbar();
           console.log(`Данные [${key}] успешно добавлены в избранное`);
           setIsFavourite(true);
         }
