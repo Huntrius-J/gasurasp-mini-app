@@ -225,10 +225,7 @@ const isSameDay = (date1, date2) => {
       if (data!=null) {
         try {
           ids = JSON.parse(data);
-          console.log('идис:');
-          console.log(ids);
         } catch (e) {
-          console.log(e);
           ids = [];
         }
       }
@@ -239,7 +236,7 @@ const isSameDay = (date1, date2) => {
         let removed = false;
         if(platform=='android' || platform=='ios')
         {
-          storage.removeItem(key).then(({status}) => {
+          await storage.removeItem(key).then(({status}) => {
             if(status === 'removed') {
                 removed = true;
             }
@@ -247,7 +244,7 @@ const isSameDay = (date1, date2) => {
         }
         else
         {
-          storage.removeItem(key);
+          await storage.removeItem(key);
           const check = storage.getItem(key);
           if(check == null)
           {
@@ -259,7 +256,7 @@ const isSameDay = (date1, date2) => {
         if(removed)
         {
           const updatedIds = ids.filter(id => id !== key);
-          storage.setItem('favorite_ids', JSON.stringify(updatedIds));
+          await storage.setItem('favorite_ids', JSON.stringify(updatedIds));
           console.log(`Данные [${key}] успешно удалены из избранного`);
           setIsFavourite(false);
         }
@@ -268,7 +265,7 @@ const isSameDay = (date1, date2) => {
         let updated = false;
         if(platform=='android' || platform=='ios')
         {
-          storage.setItem(key, value).then(({status}) => {
+          await storage.setItem(key, value).then(({status}) => {
             if(status === 'updated') {
                 updated = true;
             }
@@ -276,7 +273,7 @@ const isSameDay = (date1, date2) => {
         }
         else
         {
-          storage.setItem(key, value);
+          await storage.setItem(key, value);
           const check = storage.getItem(key);
           if(check != null)
           {
@@ -286,7 +283,7 @@ const isSameDay = (date1, date2) => {
         if(updated = true)
         {
           ids.push(key);
-          storage.setItem('favorite_ids', JSON.stringify(ids));
+          await storage.setItem('favorite_ids', JSON.stringify(ids));
           console.log(`Данные [${key}] успешно добавлены в избранное`);
           setIsFavourite(true);
         }
