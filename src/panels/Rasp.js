@@ -1,8 +1,8 @@
-import { Panel, PanelHeader, DateInput, Card, RichCell, Group, Box, Text, PanelHeaderBack, Spinner, } from '@vkontakte/vkui';
+import { Panel, PanelHeader, DateInput, Card, RichCell, Group, Box, Text, PanelHeaderBack, Spinner, Button,PanelHeaderButton } from '@vkontakte/vkui';
 import { useRouteNavigator, useSearchParams } from '@vkontakte/vk-mini-apps-router';
-import PropTypes from 'prop-types';
-import React, { useState, useLayoutEffect} from 'react';
-import { Icon12User, Icon20CalendarCheckOutline } from '@vkontakte/icons';
+import PropTypes, { func } from 'prop-types';
+import React, { useState, useLayoutEffect, useEffect} from 'react';
+import { Icon12User, Icon20CalendarCheckOutline, Icon24Favorite, Icon24FavoriteOutline} from '@vkontakte/icons';
 
 export const Rasp = ({id}) => {
   const routeNavigator = useRouteNavigator();
@@ -176,11 +176,82 @@ const isSameDay = (date1, date2) => {
     );
   };
 
+  const [isFavourite, setIsFavourite] = useState(false);
+
+  // 2. Проверяем статус при загрузке компонента или при смене выбранного элемента
+  useEffect(() => {
+    if (!selectedItem?.id) return;
+
+    window.WebApp.DeviceStorage.getItem('favorite_ids').then((result) => {
+      if (result && result.value) {
+        try {
+          const ids = JSON.parse(result.value);
+          // Если ID текущего элемента есть в массиве — ставим true
+          setIsFavourite(ids.includes(selectedItem.id));
+        } catch (e) {
+          setIsFavourite(false);
+        }
+      } else {
+        setIsFavourite(false);
+      }
+    });
+  }, [selectedItem?.id]);
+
+  function toggleFavourite() {
+    const key = selectedItem.id;
+    const value = `${selectedItem.type}::${selectedItem.name}`;
+
+    window.WebApp.DeviceStorage.getItem('favorite_ids').then((result) => {
+      let ids = [];
+      if (result && result.value) {
+        try {
+          ids = JSON.parse(result.value);
+        } catch (e) {
+          ids = [];
+        }
+      }
+
+      const isAlreadyFavourite = ids.includes(key);
+
+      if (isAlreadyFavourite) {
+        window.WebApp.DeviceStorage.removeItem(key).then(() => {
+          const updatedIds = ids.filter(id => id !== key);
+          
+          window.WebApp.DeviceStorage.setItem('favorite_ids', JSON.stringify(updatedIds)).then(() => {
+            console.log(`Данные [${key}] успешно удалены из избранного`);
+          });
+        });
+
+      } else {
+        window.WebApp.DeviceStorage.setItem(key, value).then(({ status }) => {
+          if (status === 'updated') {
+            ids.push(key);
+            window.WebApp.DeviceStorage.setItem('favorite_ids', JSON.stringify(ids)).then(() => {
+              console.log(`Данные [${key}] успешно добавлены в избранное`);
+              
+              // ТУТ МОЖНО ОБНОВИТЬ СОСТОЯНИЕ (STATE) В REACT, ЧТОБЫ ИКОНКА ПОМЕНЯЛАСЬ
+            });
+          }
+        });
+      }
+    });
+  }
+
   const groupedData = groupCardsByDate();
   
   return (
     <Panel id={id}>
-      <PanelHeader before={<PanelHeaderBack onClick={() => routeNavigator.back()} />}>{<Text weight="2" style={{fontSize:16}}>{getPanelHeader()}</Text>}</PanelHeader>
+      <PanelHeader 
+        before={<PanelHeaderBack onClick={() => routeNavigator.back()} />} 
+        after={<PanelHeaderButton style={{marginRight:10}} onClick={() => toggleFavourite()}>
+          {isFavourite ? (
+            <Icon24Favorite/> 
+          ) : (
+            <Icon24FavoriteOutline />
+          )}
+      </PanelHeaderButton>}>
+        {<Text weight="2" style={{fontSize:16}}>{getPanelHeader()}</Text>}
+      </PanelHeader>
       <Group style={{padding: 12}}>
         <DateInput renderDayContent={renderDayContent} style={{textAlign:"center"}} value={date} onChange={handleDateChange} after=""  disabled={isLoading} defaultValue={new Date()} accessible/>
       </Group>
