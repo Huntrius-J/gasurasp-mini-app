@@ -13,11 +13,14 @@ export const App = () => {
   const storage = (platform=='android' || platform=='ios')?window.WebApp.DeviceStorage:window.localStorage;
   
   function initStorageIfNeeded() {
+    console.log('init');
 
-  Promise.resolve(storage.getItem('favorite_ids'))
+    Promise.resolve(storage.getItem('favorite_ids'))
     .then((result) => {
       const rawValue = (platform === 'android' || platform === 'ios') ? result?.value : result;
+      console.log(rawValue);
       if (rawValue == null || rawValue === '') {
+        console.log('update favorites');
         storage.setItem('favorite_ids', JSON.stringify([]));
       }
     })
@@ -25,11 +28,17 @@ export const App = () => {
       const errorStr = String(err?.message || err);
       if (errorStr.includes('not_found')) {
         storage.setItem('favorite_ids', JSON.stringify([]));
+        console.log('update favorites');
       } else {
         console.error('Непредвиденная ошибка хранилища:', err);
       }
     });
 }
+
+  useEffect(() => {
+    initStorageIfNeeded();
+  }, []);
+
 
 
   useEffect(() => {
@@ -40,7 +49,6 @@ export const App = () => {
       setPopout(null);
     }
     fetchData();
-    initStorageIfNeeded();
   }, []);
 
   return (
