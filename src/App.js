@@ -12,7 +12,7 @@ export const App = () => {
   const platform = window.WebApp.platform;
   const storage = (platform=='android' || platform=='ios')?window.WebApp.DeviceStorage:window.localStorage;
   
-  function initStorageIfNeeded() {
+  async function initStorageIfNeeded() {
     console.log('init');
 
     Promise.resolve(storage.getItem('favorite_ids'))
