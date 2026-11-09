@@ -196,7 +196,7 @@ const isSameDay = (date1, date2) => {
 
   useEffect(() => {
       if (!selectedItem?.id) return;
-      const result = storage.getItem('favorite_ids');
+      const result = ((platform=='android' || platform=='ios')?storage.getItem('favorite_ids').value:storage.getItem('favorite_ids'));
       if(result != null)
       {
         ((platform=='android' || platform=='ios')?Promise.resolve(storage.getItem('favorite_ids')).value:Promise.resolve(storage.getItem('favorite_ids'))).then((result) => {
