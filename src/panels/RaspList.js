@@ -43,6 +43,7 @@ export const RaspList = ({id}) => {
       });
 
       return Promise.all(promises).then((results) => {
+        console.log(results);
         return results
           .filter(item => item && item.value)
           .map(item => {

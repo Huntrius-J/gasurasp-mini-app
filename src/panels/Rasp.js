@@ -224,9 +224,11 @@ const isSameDay = (date1, date2) => {
     try {
       const result = storage.getItem('favorite_ids');
       let ids = [];
-      if (((platform=='android' || platform=='ios')?result.value:result)) {
+      if (((platform=='android' || platform=='ios')?result.value!=null:result!=null)) {
         try {
           ids = JSON.parse(((platform=='android' || platform=='ios')?result.value:result));
+          console.log('идис:');
+          console.log(ids);
         } catch (e) {
           console.log(e);
           ids = [];
@@ -283,7 +285,6 @@ const isSameDay = (date1, date2) => {
             updated = true;
           }
         }
-        console.log(updated);
         if(updated = true)
         {
           ids.push(key);
