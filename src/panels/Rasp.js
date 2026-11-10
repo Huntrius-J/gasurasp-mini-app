@@ -200,7 +200,7 @@ const isSameDay = (date1, date2) => {
         const data = (platform=='android' || platform=='ios')?result.value:result;
         if (data != null) {
           try {
-            const ids = JSON.parse((platform=='android' || platform=='ios')?result.value:result);
+            const ids = JSON.parse(data);
             setIsFavourite(ids.includes(selectedItem.id));
           } catch (e) {
             setIsFavourite(false);

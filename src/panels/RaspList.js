@@ -58,7 +58,10 @@ export const RaspList = ({id}) => {
             };
           });
       });
-    }).catch(() => storage.setItem('favorite_ids', JSON.stringify([])));;
+    }).catch(() => {
+      storage.setItem('favorite_ids', JSON.stringify([]));
+      return [];
+    });;
   }
 
   const fetchData = async (searchBy) => {
