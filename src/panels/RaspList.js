@@ -215,19 +215,21 @@ export const RaspList = ({id}) => {
                       </span>
                   </span>
                 </TabsItem>
-                <TabsItem id="raspFavour">
-                  <span style={{ 
-                    display: 'inline-flex', 
-                    flexDirection: 'column', 
-                    alignItems: 'center',
-                    gap: '4px' 
-                  }}>
-                    <Icon24Favorite />
-                      <span style={{ whiteSpace: 'normal', wordBreak: 'break-word', display: 'inline-block', textAlign:'center' }}>
+                {platform !== 'web' && (
+                  <TabsItem id="raspFavour">
+                    <span style={{ 
+                      display: 'inline-flex', 
+                      flexDirection: 'column', 
+                      alignItems: 'center',
+                      gap: '4px' 
+                    }}>
+                      <Icon24Favorite />
+                      <span style={{ whiteSpace: 'normal', wordBreak: 'break-word', display: 'inline-block', textAlign: 'center' }}>
                         {isCompact ? "Избр." : "Избранное"}
                       </span>
-                  </span>
-                </TabsItem>
+                    </span>
+                  </TabsItem>
+                )}
               </Tabs>
             {/* <CustomSelect
               style={{textAlign:"center"}}

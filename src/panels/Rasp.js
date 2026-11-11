@@ -297,13 +297,11 @@ const isSameDay = (date1, date2) => {
     <Panel id={id}>
       <PanelHeader 
         before={<PanelHeaderBack onClick={() => routeNavigator.back()} />} 
-        after={<PanelHeaderButton style={{marginRight:10}} onClick={() => toggleFavourite()}>
-          {isFavourite ? (
-            <Icon24Favorite/> 
-          ) : (
-            <Icon24FavoriteOutline />
-          )}
-      </PanelHeaderButton>}>
+        after={platform !== 'web' ? (
+          <PanelHeaderButton style={{ marginRight: 10 }} onClick={() => toggleFavourite()}>
+            {isFavourite ? <Icon24Favorite /> : <Icon24FavoriteOutline />}
+          </PanelHeaderButton>
+        ) : undefined}>
         {<Text weight="2" style={{fontSize:16}}>{getPanelHeader()}</Text>}
       </PanelHeader>
       <Group style={{padding: 12}}>
