@@ -200,16 +200,8 @@ const isSameDay = (date1, date2) => {
         const data = (platform=='android' || platform=='ios' || platform=='desktop')?result.value:result;
         if (data != null) {
           try {
-            if(platform == desktop)
-            {
-              const ids = data.split(',').filter(Boolean);
-              setIsFavourite(ids.includes(selectedItem.id));
-            }
-            else
-            {
-              const ids = JSON.parse(data);
-              setIsFavourite(ids.includes(selectedItem.id));
-            }
+            const ids = JSON.parse(data);
+            setIsFavourite(ids.includes(selectedItem.id));
           } catch (e) {
             setIsFavourite(false);
           }
@@ -230,14 +222,7 @@ const isSameDay = (date1, date2) => {
       const data = (platform=='android' || platform=='ios' || platform=='desktop')?result.value:result;
       if (data!=null) {
         try {
-            if(platform == desktop)
-            {
-              ids = data.split(',').filter(Boolean);
-            }
-            else
-            {
-              ids = JSON.parse(data);
-            }
+          ids = JSON.parse(data);
         } catch (e) {
           ids = [];
         }
@@ -268,15 +253,7 @@ const isSameDay = (date1, date2) => {
         if(removed)
         {
           const updatedIds = ids.filter(id => id !== key);
-          if(platform == 'desktop')
-          {
-            const serializedIds = updatedIds.map(String).join(',');
-            await storage.setItem('favorite_ids', serializedIds);
-          }
-          else
-          {
-            await storage.setItem('favorite_ids', JSON.stringify(updatedIds));
-          }
+          await storage.setItem('favorite_ids', JSON.stringify(updatedIds));
           console.log(`Данные [${key}] успешно удалены из избранного`);
           setIsFavourite(false);
         }
@@ -303,15 +280,7 @@ const isSameDay = (date1, date2) => {
         if(updated = true)
         {
           ids.push(key);
-          if(platform == 'desktop')
-          {
-            const serializedIds = ids.map(String).join(',');
-            await storage.setItem('favorite_ids', serializedIds);
-          }
-          else
-          {
-            await storage.setItem('favorite_ids', JSON.stringify(ids));
-          }
+          await storage.setItem('favorite_ids', JSON.stringify(ids));
           console.log(`Данные [${key}] успешно добавлены в избранное`);
           setIsFavourite(true);
         }
