@@ -29,6 +29,7 @@ export const RaspList = ({id}) => {
   };
 
   function getAllFavorites() {
+    console.log(platform);
     return Promise.resolve(storage.getItem('favorite_ids')).then((result) => {
       const data = (platform=='android' || platform=='ios')?result.value:result;
 
