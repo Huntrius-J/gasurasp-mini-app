@@ -36,8 +36,15 @@ export const RaspList = ({id}) => {
       if (!data) {
         return []; 
       }
-
-      const ids = JSON.parse(data);
+      let ids = [];
+      if(platform == desktop)
+      {
+        ids = data.split(',').filter(Boolean);
+      }
+      else
+      {
+        ids = JSON.parse(data);
+      }
 
       const promises = ids.map(id => {
       return Promise.resolve(storage.getItem(id)).then((itemResult) => {
