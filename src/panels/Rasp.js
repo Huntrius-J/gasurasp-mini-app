@@ -17,7 +17,7 @@ export const Rasp = ({id}) => {
   const idParam = searchParams.get('id');
   const name = searchParams.get('name');
   const platform = window.WebApp.platform;
-  const storage = (platform=='android' || platform=='ios')?window.WebApp.DeviceStorage:window.localStorage;
+  const storage = (platform=='android' || platform=='ios' || platform=='desktop')?window.WebApp.DeviceStorage:window.localStorage;
   var message = '';
   const showSnackbar = () => {
     if (snackbar) return;
@@ -197,7 +197,7 @@ const isSameDay = (date1, date2) => {
   useEffect(() => {
       if (!selectedItem?.id) return;
       Promise.resolve(storage.getItem('favorite_ids')).then((result) => {
-        const data = (platform=='android' || platform=='ios')?result.value:result;
+        const data = (platform=='android' || platform=='ios' || platform=='desktop')?result.value:result;
         if (data != null) {
           try {
             const ids = JSON.parse(data);
@@ -219,7 +219,7 @@ const isSameDay = (date1, date2) => {
     try {
       const result = await storage.getItem('favorite_ids');
       let ids = [];
-      const data = (platform=='android' || platform=='ios')?result.value:result;
+      const data = (platform=='android' || platform=='ios' || platform=='desktop')?result.value:result;
       if (data!=null) {
         try {
           ids = JSON.parse(data);
@@ -231,7 +231,7 @@ const isSameDay = (date1, date2) => {
 
       if (isAlreadyFavourite) {
         let removed = false;
-        if(platform=='android' || platform=='ios')
+        if(platform=='android' || platform=='ios' || platform=='desktop')
         {
           await storage.removeItem(key).then(({status}) => {
             if(status === 'removed') {
@@ -260,7 +260,7 @@ const isSameDay = (date1, date2) => {
 
       } else {
         let updated = false;
-        if(platform=='android' || platform=='ios')
+        if(platform=='android' || platform=='ios' || platform=='desktop')
         {
           await storage.setItem(key, value).then(({status}) => {
             if(status === 'updated') {

@@ -14,7 +14,7 @@ export const RaspList = ({id}) => {
   const [searchBy,setSearchBy] = useState("raspGroupList");
   const [selectIcon,setSelectIcon] = useState(<Icon16Users></Icon16Users>);
   const platform = window.WebApp.platform;
-  const storage = (platform=='android' || platform=='ios')?window.WebApp.DeviceStorage:window.localStorage;
+  const storage = (platform=='android' || platform=='ios' || platform=='desktop')?window.WebApp.DeviceStorage:window.localStorage;
   var message = '';
   const showSnackbar = () => {
     if (snackbar) return;
@@ -31,7 +31,7 @@ export const RaspList = ({id}) => {
   function getAllFavorites() {
     console.log(platform);
     return Promise.resolve(storage.getItem('favorite_ids')).then((result) => {
-      const data = (platform=='android' || platform=='ios')?result.value:result;
+      const data = (platform=='android' || platform=='ios' || platform=='desktop')?result.value:result;
 
       if (!data) {
         return []; 
@@ -41,7 +41,7 @@ export const RaspList = ({id}) => {
 
       const promises = ids.map(id => {
       return Promise.resolve(storage.getItem(id)).then((itemResult) => {
-        const itemValue = (platform=='android' || platform=='ios') ? itemResult?.value : itemResult;
+        const itemValue = (platform=='android' || platform=='ios' || platform=='desktop') ? itemResult?.value : itemResult;
         return { id: id, value: itemValue };
       });
     });
